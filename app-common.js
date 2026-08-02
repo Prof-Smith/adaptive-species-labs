@@ -1,0 +1,1 @@
+function saveField(id){const el=document.getElementById(id);if(!el)return;const key=location.pathname+'#'+id;el.value=localStorage.getItem(key)||'';el.addEventListener('input',()=>localStorage.setItem(key,el.value));}document.addEventListener('DOMContentLoaded',()=>document.querySelectorAll('textarea[data-save]').forEach(t=>saveField(t.id)));
