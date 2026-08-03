@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapter 1 Lab · Decision in the Fog</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <style>
+    :root{--blue:#124e7f;--ink:#102033;--muted:#52677d;--line:#dbeafe;--soft:#f8fbff;--orange:#c25009;--green:#15803d;--red:#b91c1c;--gold:#b7791f;--gray:#64748b;}
+    body{font-size:18px;line-height:1.6;color:var(--ink)}
+    .lab-shell{max-width:1120px;margin:0 auto;padding:22px}
+    .lab-hero{background:linear-gradient(135deg,#f8fbff,#fff7ed);border:1px solid #dbeafe;border-radius:28px;padding:34px;margin:20px 0 24px;box-shadow:0 16px 50px rgba(18,78,127,.08)}
+    .kicker{letter-spacing:.12em;text-transform:uppercase;color:var(--orange);font-weight:900;font-size:.78rem}.lab-hero h1{font-family:Georgia,serif;color:var(--blue);font-size:2.6rem;margin:.15em 0}.lede{font-size:1.18rem;max-width:850px;color:#344b63}.nav-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.nav-pills a{background:#fff;border:1px solid #dbeafe;border-radius:999px;padding:8px 13px;color:var(--blue);font-weight:800;text-decoration:none}
+    .panel{background:#fff;border:1px solid #dbeafe;border-radius:24px;padding:26px;margin:20px 0;box-shadow:0 10px 32px rgba(15,23,42,.05)}
+    .panel h2{font-family:Georgia,serif;color:var(--blue);font-size:1.65rem;margin:0 0 8px}.panel h3{color:#12345a;margin-bottom:6px}.small{color:var(--muted);font-size:.98rem}
+    .question-card{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:stretch}.rule-card{background:#fffaf0;border:1px solid #fed7aa;border-radius:20px;padding:18px}.rule-card b{color:var(--orange)}
+    .environment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.control-card{background:var(--soft);border:1px solid #dbeafe;border-radius:18px;padding:18px}.control-card label{font-weight:900;color:#12345a;display:block}.control-card input[type=range]{width:100%;accent-color:var(--blue)}.value-row{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);margin-top:4px}.level{font-weight:900;color:var(--orange)}
+    .environment-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.env-tile{border-radius:18px;padding:15px;border:1px solid #dbeafe;background:#ffffff}.env-tile b{display:block;color:var(--blue)}.env-tile span{color:var(--muted);font-size:.96rem}
+    .fog-map{position:relative;min-height:360px;background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.9),rgba(219,234,254,.55) 28%,transparent 52%),linear-gradient(135deg,#eef7ff,#fffaf0);border:1px solid #dbeafe;border-radius:26px;overflow:hidden;margin-top:18px}.fog-layer{position:absolute;inset:0;background:radial-gradient(circle at 35% 35%,rgba(148,163,184,.28),transparent 25%),radial-gradient(circle at 70% 45%,rgba(148,163,184,.20),transparent 30%),radial-gradient(circle at 48% 75%,rgba(148,163,184,.18),transparent 24%);opacity:.65}.path{position:absolute;height:6px;border-radius:999px;background:#94a3b8;transform-origin:left center}.path.commit{left:115px;top:180px;width:330px;transform:rotate(-24deg);background:#f97316}.path.stage{left:115px;top:190px;width:410px;transform:rotate(0deg);background:#2563eb}.path.wait{left:115px;top:201px;width:320px;transform:rotate(24deg);background:#64748b}.node{position:absolute;width:34px;height:34px;border-radius:999px;border:3px solid #fff;box-shadow:0 8px 16px rgba(15,23,42,.18)}.start{left:82px;top:172px;background:#124e7f}.n-known{left:238px;top:95px;background:#2563eb}.n-assume{left:344px;top:146px;background:#f59e0b}.n-risk{left:432px;top:69px;background:#dc2626}.n-option{left:450px;top:174px;background:#16a34a}.n-unknown{left:335px;top:250px;background:#94a3b8}.n-update{left:495px;top:258px;background:#7c3aed}.choice-card{position:absolute;right:26px;width:260px;background:#fff;border:1px solid #dbeafe;border-radius:18px;padding:13px;box-shadow:0 10px 25px rgba(15,23,42,.08)}.choice-card h4{margin:0;color:var(--blue)}.choice-card p{margin:3px 0 0;font-size:.93rem;color:var(--muted)}.choice-a{top:34px}.choice-b{top:140px}.choice-c{top:246px}.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}.dot{width:12px;height:12px;border-radius:50%;display:inline-block}.blue{background:#2563eb}.yellow{background:#f59e0b}.gray{background:#94a3b8}.red{background:#dc2626}.green{background:#16a34a}.purple{background:#7c3aed}
+    .prep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.prep{display:flex;gap:10px;align-items:flex-start;background:#f8fbff;border:1px solid #dbeafe;border-radius:18px;padding:14px}.prep input{margin-top:5px;transform:scale(1.25)}.prep b{display:block;color:#12345a}.prep span{font-size:.93rem;color:var(--muted)}
+    .decision-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.decision-buttons button,.main-action{border:0;border-radius:18px;padding:16px;font-weight:900;color:#fff;cursor:pointer;font-size:1rem}.commit-btn{background:#f97316}.stage-btn{background:#2563eb}.wait-btn{background:#64748b}.main-action{background:#124e7f;margin-top:14px}.decision-buttons button.selected{outline:4px solid #facc15;box-shadow:0 0 0 4px rgba(250,204,21,.25)}
+    .dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.metric{background:#f8fbff;border:1px solid #dbeafe;border-radius:18px;padding:16px}.metric .label{text-transform:uppercase;letter-spacing:.08em;color:var(--orange);font-size:.78rem;font-weight:900}.metric .number{font-size:2rem;font-family:Georgia,serif;color:var(--blue);font-weight:900}.metric .sub{color:var(--muted);font-size:.94rem}.rooms{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}.room{border:1px solid #dbeafe;border-radius:18px;padding:16px;background:#fff}.room.active{border:3px solid #facc15;background:#fff7ed}.room h4{margin:0 0 4px;color:var(--blue)}.room p{margin:0;color:var(--muted);font-size:.95rem}.feedback{background:#f8fbff;border:1px solid #dbeafe;border-radius:20px;padding:20px;margin-top:18px}.feedback h3{margin-top:0}.why-list{margin:8px 0 0;padding-left:1.2rem}.why-list li{margin:4px 0}.good{color:var(--green);font-weight:900}.bad{color:var(--red);font-weight:900}.mix{color:var(--gold);font-weight:900}
+    @media(max-width:850px){.question-card,.environment-grid,.environment-summary,.prep-grid,.decision-buttons,.dashboard{grid-template-columns:1fr}.choice-card{position:relative;right:auto;width:auto;margin:10px 16px}.fog-map{padding-bottom:16px}.path,.node{display:none}.rooms{grid-template-columns:1fr}.lab-hero h1{font-size:2.1rem}}
+  </style>
+</head>
+<body>
+  <div class="lab-shell">
+    <header class="lab-hero">
+      <span class="kicker">Adaptive Judgment Lab · Chapter 1</span>
+      <h1>Decision in the Fog</h1>
+      <p class="lede">This version strips the lab to its core: read the environment, choose a path, reveal the outcome, then see exactly why the decision landed in one of the four rooms of judgment.</p>
+      <nav class="nav-pills"><a href="../../index.html">Home</a><a href="../bias-weather-map/">Ch. 2 →</a><a href="../../index.html#labs">All labs</a></nav>
+    </header>
+
+    <section class="panel question-card">
+      <div>
+        <span class="kicker">The question</span>
+        <h2>How do you act before the ending is known?</h2>
+        <p>Chapter 1 begins with the human condition: decisions arrive before certainty. This lab turns that condition into a small decision world. The goal is not to guess the future correctly. The goal is to preserve the quality of your judgment before the future answers.</p>
+      </div>
+      <div class="rule-card"><b>Lab rule:</b><br>Do not judge the decision from the ending. Reconstruct the mind that had to act before the ending was known.</div>
+    </section>
+
+    <section class="panel">
+      <span class="kicker">Step 1</span>
+      <h2>Read the environment</h2>
+      <p class="small">Use only three controls. They define the decision weather: how much evidence you have, how quickly the window is closing, and how serious the consequences are.</p>
+      <div class="environment-grid">
+        <div class="control-card"><label for="clarity">Evidence clarity <span id="clarityLevel" class="level">Mixed</span></label><input id="clarity" type="range" min="0" max="100" value="48"><div class="value-row"><span>foggy</span><span>clear</span></div></div>
+        <div class="control-card"><label for="pressure">Time pressure <span id="pressureLevel" class="level">Narrowing</span></label><input id="pressure" type="range" min="0" max="100" value="55"><div class="value-row"><span>patient</span><span>urgent</span></div></div>
+        <div class="control-card"><label for="stakes">Stakes <span id="stakesLevel" class="level">Meaningful</span></label><input id="stakes" type="range" min="0" max="100" value="62"><div class="value-row"><span>reversible</span><span>consequential</span></div></div>
+      </div>
+      <div class="environment-summary">
+        <div class="env-tile"><b id="evidenceName">Mixed signal</b><span id="evidenceText">Some evidence is available, but assumptions still matter.</span></div>
+        <div class="env-tile"><b id="timingName">Narrowing window</b><span id="timingText">Waiting has a cost, but rushing can still damage the process.</span></div>
+        <div class="env-tile"><b id="stakesName">Meaningful stakes</b><span id="stakesText">The consequences matter enough to require explicit uncertainty.</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <span class="kicker">Step 2</span>
+      <h2>See the fog map</h2>
+      <p class="small">The map is not a prediction engine. It is a visual reminder that decisions contain facts, assumptions, unknowns, risks, opportunities, and update triggers at the same time.</p>
+      <div class="fog-map" aria-label="Decision in the Fog map">
+        <div class="fog-layer"></div>
+        <div class="path commit"></div><div class="path stage"></div><div class="path wait"></div>
+        <div class="node start" title="You are here"></div><div class="node n-known" title="Known facts"></div><div class="node n-assume" title="Assumptions"></div><div class="node n-risk" title="Risk zone"></div><div class="node n-option" title="Opportunity"></div><div class="node n-unknown" title="Unknowns"></div><div class="node n-update" title="Update trigger"></div>
+        <div class="choice-card choice-a"><h4>Path A · Commit</h4><p>Move now. Useful when evidence is strong or the window is closing.</p></div>
+        <div class="choice-card choice-b"><h4>Path B · Stage</h4><p>Take a reversible step. Useful when evidence is mixed and stakes matter.</p></div>
+        <div class="choice-card choice-c"><h4>Path C · Wait</h4><p>Delay for more evidence. Useful when information is poor and time allows.</p></div>
+      </div>
+      <div class="legend"><span><i class="dot blue"></i>facts</span><span><i class="dot yellow"></i>assumptions</span><span><i class="dot gray"></i>unknowns</span><span><i class="dot red"></i>risks</span><span><i class="dot green"></i>opportunities</span><span><i class="dot purple"></i>update triggers</span></div>
+    </section>
+
+    <section class="panel">
+      <span class="kicker">Step 3</span>
+      <h2>Prepare before choosing</h2>
+      <p class="small">These three checks make the pre-outcome mind visible. They are deliberately simple because Chapter 1 is about preserving uncertainty, not completing a form.</p>
+      <div class="prep-grid">
+        <label class="prep"><input id="assumption" type="checkbox" checked><span><b>Name one assumption</b><span>What story am I bringing into the decision?</span></span></label>
+        <label class="prep"><input id="unknown" type="checkbox" checked><span><b>Name one unknown</b><span>What important fact is still hidden?</span></span></label>
+        <label class="prep"><input id="trigger" type="checkbox"><span><b>Name one update trigger</b><span>What evidence would make me revise?</span></span></label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <span class="kicker">Step 4</span>
+      <h2>Choose a path</h2>
+      <div class="decision-buttons">
+        <button class="commit-btn" data-choice="commit">Path A · Commit</button>
+        <button class="stage-btn selected" data-choice="stage">Path B · Stage</button>
+        <button class="wait-btn" data-choice="wait">Path C · Wait</button>
+      </div>
+      <button id="reveal" class="main-action">Reveal outcome and judgment room</button>
+    </section>
+
+    <section class="panel">
+      <span class="kicker">Step 5</span>
+      <h2>Read the feedback</h2>
+      <div class="dashboard">
+        <div class="metric"><div class="label">Process quality</div><div id="processScore" class="number">—</div><div id="processSub" class="sub">Decision process before the ending.</div></div>
+        <div class="metric"><div class="label">Outcome quality</div><div id="outcomeScore" class="number">—</div><div id="outcomeSub" class="sub">What happened after the choice.</div></div>
+        <div class="metric"><div class="label">Judgment room</div><div id="roomName" class="number" style="font-size:1.35rem">—</div><div id="roomSub" class="sub">Process and outcome separated.</div></div>
+      </div>
+      <div class="rooms">
+        <div id="room-gg" class="room"><h4>Skill plus luck</h4><p>Good process, good outcome.</p></div>
+        <div id="room-gb" class="room"><h4>Discipline tested</h4><p>Good process, bad outcome.</p></div>
+        <div id="room-bg" class="room"><h4>Luck disguised as wisdom</h4><p>Weak process, good outcome.</p></div>
+        <div id="room-bb" class="room"><h4>Failure with evidence</h4><p>Weak process, bad outcome.</p></div>
+      </div>
+      <div class="feedback">
+        <h3>Why this room?</h3>
+        <p id="whyText">Choose a path and reveal the outcome to see the explanation.</p>
+        <ul id="whyList" class="why-list"></ul>
+      </div>
+    </section>
+  </div>
+  <script src="decision-fog.js"></script>
+</body>
+</html>
