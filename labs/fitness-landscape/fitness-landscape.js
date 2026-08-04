@@ -1,0 +1,94 @@
+const $=id=>document.getElementById(id);const canvas=$('landscapeCanvas'),ctx=canvas.getContext('2d');let W=820,H=560,peaks=[],agent,path=[],running=false,tick=0,shockPulse=0,shockCenter={x:410,y:270};const TRAIL='rgba(0,229,255,';function rand(a,b){return a+Math.random()*(b-a)}function labels(){const r=+$('ruggedness').value,e=+$('exploration').value,c=+$('change').value;$('ruggednessLevel').textContent=r<35?'Smooth':r<70?'Medium':'Rugged';$('explorationLevel').textContent=e<35?'Exploit':e<70?'Balanced':'Explore';$('changeLevel').textContent=c<35?'Stable':c<70?'Drifting':'Volatile';return{r,e,c}}function newPeaks(){const{r}=labels();const n=Math.round(3+r/18);peaks=[];for(let i=0;i<n;i++){peaks.push({x:rand(90,W-110),y:rand(80,H-135),amp:rand(.58,1.15),spread:rand(55,132-r*.46),vx:rand(-.45,.45),vy:rand(-.35,.35)})}agent={x:rand(80,W-170),y:rand(95,H-150)};path=[];tick=0;shockPulse=0;draw();updateFeedback()}function fitAt(x,y){let v=0;for(const p of peaks){const d=((x-p.x)**2+(y-p.y)**2)/(2*p.spread*p.spread);v+=p.amp*Math.exp(-d)}return v}function globalPeak(){let best={x:0,y:0,v:-1};for(let x=24;x<W-24;x+=18){for(let y=52;y<H-86;y+=18){const v=fitAt(x,y);if(v>best.v)best={x,y,v}}}return best}function updatePeaks(){const{c}=labels();const drift=c/100;for(const p of peaks){p.x+=p.vx*drift*2.2;p.y+=p.vy*drift*2.2;if(p.x<70||p.x>W-90)p.vx*=-1;if(p.y<72||p.y>H-125)p.vy*=-1}}function stepAgent(){const{e}=labels();if(!agent)return;updatePeaks();const current=fitAt(agent.x,agent.y);let best={x:agent.x,y:agent.y,v:current};const dirs=18,rad=17;for(let i=0;i<dirs;i++){const a=i/dirs*Math.PI*2,x=agent.x+Math.cos(a)*rad,y=agent.y+Math.sin(a)*rad,v=fitAt(x,y);if(v>best.v)best={x,y,v}}if(Math.random()<e/100*.40){best={x:agent.x+rand(-78,78),y:agent.y+rand(-78,78),v:0}}best.x=Math.max(28,Math.min(W-28,best.x));best.y=Math.max(58,Math.min(H-92,best.y));path.push({x:agent.x,y:agent.y,t:tick});if(path.length>130)path.shift();agent.x=best.x;agent.y=best.y;tick++;if(shockPulse>0)shockPulse--;draw();updateFeedback()}function color(v,min,max){const t=Math.max(0,Math.min(1,(v-min)/(max-min||1)));const stops=[[240,249,255],[255,245,190],[251,146,60],[220,38,38]];const s=Math.min(stops.length-2,Math.floor(t*(stops.length-1)));const local=t*(stops.length-1)-s;const a=stops[s],b=stops[s+1];const r=Math.round(a[0]+(b[0]-a[0])*local),g=Math.round(a[1]+(b[1]-a[1])*local),bb=Math.round(a[2]+(b[2]-a[2])*local);return`rgb(${r},${g},${bb})`}function draw(){
+  ctx.clearRect(0,0,W,H);
+  // Smooth background field instead of blocky heatmap.
+  const bg=ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#eef8ff');
+  bg.addColorStop(.55,'#fff9df');
+  bg.addColorStop(1,'#fff2d8');
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,W,H);
+
+  // Draw each peak as a soft radial fitness glow.
+  for(const p of peaks){
+    const radius=p.spread*2.15;
+    const grad=ctx.createRadialGradient(p.x,p.y,4,p.x,p.y,radius);
+    grad.addColorStop(0,`rgba(220,38,38,${0.74*p.amp})`);
+    grad.addColorStop(.32,`rgba(249,115,22,${0.48*p.amp})`);
+    grad.addColorStop(.62,`rgba(250,204,21,${0.22*p.amp})`);
+    grad.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,radius,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Subtle topographic rings around peaks. These are local rings, not long contour artifacts.
+  ctx.save();
+  ctx.globalAlpha=.20;
+  ctx.strokeStyle='#124e7f';
+  ctx.lineWidth=1.25;
+  for(const p of peaks){
+    for(const m of [.55,.85,1.18]){
+      ctx.beginPath();
+      ctx.ellipse(p.x,p.y,p.spread*m,p.spread*m*.72,0,0,Math.PI*2);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // Faded search trail, deliberately bright cyan with dark halo.
+  for(let i=1;i<path.length;i++){
+    const p=path[i-1],q=path[i];
+    const age=(path.length-i)/path.length;
+    const alpha=0.10+(1-age)*0.88;
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    ctx.strokeStyle=`rgba(2,6,23,${0.10+(1-age)*0.24})`;
+    ctx.lineWidth=8+3*(1-age);
+    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+    ctx.strokeStyle=`rgba(0,229,255,${alpha})`;
+    ctx.lineWidth=5+4*(1-age);
+    ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+  }
+
+  const g=globalPeak();
+  const grad=ctx.createRadialGradient(g.x,g.y,4,g.x,g.y,48);
+  grad.addColorStop(0,'rgba(22,163,74,.58)');
+  grad.addColorStop(1,'rgba(22,163,74,0)');
+  ctx.fillStyle=grad;ctx.beginPath();ctx.arc(g.x,g.y,48,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#16a34a';ctx.beginPath();ctx.arc(g.x,g.y,12+Math.sin(tick/5)*2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.stroke();
+  ctx.fillStyle='#124e7f';ctx.font='bold 12px Arial';ctx.fillText('global peak',g.x+16,g.y-12);
+
+  const local=nearestLocalTrap();
+  if(local&&local.risk>.38){
+    ctx.fillStyle='rgba(220,38,38,.95)';ctx.beginPath();ctx.arc(local.x,local.y,9,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle='#7f1d1d';ctx.font='bold 12px Arial';ctx.fillText('local trap',local.x+13,local.y+4);
+  }
+
+  if(agent){
+    const ag=ctx.createRadialGradient(agent.x,agent.y,2,agent.x,agent.y,34);
+    ag.addColorStop(0,'rgba(37,99,235,.46)');ag.addColorStop(1,'rgba(37,99,235,0)');
+    ctx.fillStyle=ag;ctx.beginPath();ctx.arc(agent.x,agent.y,34,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#2563eb';ctx.beginPath();ctx.arc(agent.x,agent.y,14,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.stroke();
+  }
+
+  if(shockPulse>0){
+    const progress=1-shockPulse/38;
+    ctx.save();
+    ctx.strokeStyle=`rgba(124,58,237,${0.85*(1-progress)})`;
+    ctx.lineWidth=5;ctx.setLineDash([14,10]);
+    ctx.beginPath();ctx.arc(shockCenter.x,shockCenter.y,40+progress*360,0,Math.PI*2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle=`rgba(124,58,237,${0.55*(1-progress)})`;ctx.lineWidth=2;
+    for(let i=0;i<9;i++){
+      const a=i/9*Math.PI*2+progress*.7;
+      ctx.beginPath();ctx.moveTo(shockCenter.x,shockCenter.y);
+      ctx.lineTo(shockCenter.x+Math.cos(a)*(80+progress*280),shockCenter.y+Math.sin(a)*(80+progress*220));ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+function nearestLocalTrap(){if(!agent)return null;const g=globalPeak(),av=fitAt(agent.x,agent.y);const gap=(g.v-av)/(g.v||1);return{x:agent.x+24,y:agent.y-18,risk:gap}}function updateFeedback(){if(!agent)return;const g=globalPeak(),av=fitAt(agent.x,agent.y),gap=Math.max(0,(g.v-av)/(g.v||1));const fit=Math.round(Math.max(0,Math.min(100,av/(g.v||1)*100)));$('fitMetric').textContent=fit+' / 100';$('trapMetric').textContent=gap<.18?'Low':gap<.40?'Moderate':'High';if(gap<.18){$('stateName').textContent='Fit is strong';$('stateText').textContent='The current strategy is close to the best visible region of the landscape.';$('moveTitle').textContent='Protective move';$('moveText').textContent='Keep monitoring because the landscape can still move.'}else if(gap<.40){$('stateName').textContent='Local fit, open question';$('stateText').textContent='The agent is improving, but a better peak may be nearby or newly emerging.';$('moveTitle').textContent='Protective move';$('moveText').textContent='Use small experiments to test neighboring terrain.'}else{$('stateName').textContent='Local trap risk';$('stateText').textContent='The agent is climbing locally while the best visible peak is elsewhere.';$('moveTitle').textContent='Protective move';$('moveText').textContent='Increase exploration before the local peak becomes identity.'}$('whyList').innerHTML=[`Current fit relative to best visible peak: ${fit} / 100.`,`Search trail length: ${path.length} moves.`,`Landscape state: ${$('changeLevel').textContent.toLowerCase()}.`].map(x=>`<li>${x}</li>`).join('')}function loop(){if(running){stepAgent();setTimeout(loop,100)}}function toggleRun(){running=!running;$('runButton').textContent=running?'Pause':'Start / pause';if(running)loop()}function shockLandscape(){shockCenter={x:agent?agent.x:W/2,y:agent?agent.y:H/2};for(const p of peaks){p.x=rand(90,W-110);p.y=rand(80,H-135);p.amp=rand(.58,1.15);p.vx=rand(-.55,.55);p.vy=rand(-.45,.45)}shockPulse=38;$('shockLayer').classList.remove('active');void $('shockLayer').offsetWidth;$('shockLayer').classList.add('active');draw();updateFeedback()}function reset(){running=false;$('runButton').textContent='Start / pause';newPeaks();updateFeedback()}['ruggedness','exploration','change'].forEach(id=>$(id).addEventListener('input',()=>{labels();draw();updateFeedback()}));$('runButton').addEventListener('click',toggleRun);$('stepButton').addEventListener('click',()=>stepAgent());$('shockButton').addEventListener('click',shockLandscape);$('resetButton').addEventListener('click',reset);newPeaks();updateFeedback();
