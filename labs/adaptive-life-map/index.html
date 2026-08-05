@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chapter 14 Lab · Adaptive Life Map</title>
+  <link rel="stylesheet" href="../../styles.css" />
+  <style>
+    :root{--blue:#124e7f;--ink:#102033;--muted:#52677d;--line:#dbeafe;--soft:#f8fbff;--orange:#c25009;--green:#15803d;--red:#b91c1c;--gray:#64748b;--purple:#7c3aed;--gold:#b7791f;}
+    body{font-size:18px;line-height:1.6;color:var(--ink)}
+    .lab-shell{max-width:1160px;margin:0 auto;padding:22px}.lab-hero{background:linear-gradient(135deg,#f8fbff,#fff7ed);border:1px solid #dbeafe;border-radius:28px;padding:34px;margin:20px 0 24px;box-shadow:0 16px 50px rgba(18,78,127,.08)}
+    .kicker{letter-spacing:.12em;text-transform:uppercase;color:var(--orange);font-weight:900;font-size:.78rem}.lab-hero h1{font-family:Georgia,serif;color:var(--blue);font-size:2.55rem;margin:.15em 0}.lede{font-size:1.16rem;max-width:900px;color:#344b63}.nav-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.nav-pills a{background:#fff;border:1px solid #dbeafe;border-radius:999px;padding:8px 13px;color:var(--blue);font-weight:800;text-decoration:none}
+    .panel{background:#fff;border:1px solid #dbeafe;border-radius:24px;padding:26px;margin:20px 0;box-shadow:0 10px 32px rgba(15,23,42,.05)}.panel h2{font-family:Georgia,serif;color:var(--blue);font-size:1.65rem;margin:0 0 8px}.small{color:var(--muted);font-size:.98rem}.question-card{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:stretch}.rule-card{background:#fffaf0;border:1px solid #fed7aa;border-radius:20px;padding:18px}.rule-card b{color:var(--orange)}
+    .control-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.control-card{background:var(--soft);border:1px solid #dbeafe;border-radius:18px;padding:18px}.control-card label{font-weight:900;color:#12345a;display:block}.control-card input[type=range]{width:100%;accent-color:var(--blue)}.value-row{display:flex;justify-content:space-between;font-size:.92rem;color:var(--muted);margin-top:4px}.level{font-weight:900;color:var(--orange)}
+    .run-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}.machine-wrap{background:linear-gradient(135deg,#eef8ff,#fff7ed);border:1px solid #dbeafe;border-radius:24px;overflow:hidden;position:relative;min-height:560px}.machine-wrap canvas{width:100%;height:560px;display:block}.side-panel{background:#fff;border:1px solid #dbeafe;border-radius:24px;padding:20px;box-shadow:0 10px 32px rgba(15,23,42,.05)}.side-panel h3{font-family:Georgia,serif;color:var(--blue);font-size:1.28rem;margin:0 0 8px}.feedback-state{font-family:Georgia,serif;font-size:1.45rem;color:var(--orange);font-weight:900;margin:8px 0}.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0}.metric{background:#f8fbff;border:1px solid #dbeafe;border-radius:15px;padding:10px;text-align:center}.metric b{display:block;color:var(--blue);font-size:1rem}.metric span{color:#52677d;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.why-list{padding-left:1.1rem;color:#334155}.move-card{background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:14px;margin-top:14px}.move-card b{color:#c25009}.button-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.button-row button{border:0;border-radius:16px;padding:14px 12px;color:white;font-weight:900;cursor:pointer;font-size:.98rem}.primary{background:#124e7f}.purple{background:#7c3aed}.orange{background:#c25009}.greenbtn{background:#15803d}.gray{background:#64748b}.wide{grid-column:1/-1}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.9rem;color:#52677d}.dot{width:12px;height:12px;border-radius:50%;display:inline-block}.blue{background:#2563eb}.orange-dot{background:#f59e0b}.green{background:#16a34a}.red{background:#dc2626}.purple-dot{background:#7c3aed}.gray-dot{background:#64748b}.gold-dot{background:#b7791f}.caption{font-size:.95rem;color:#52677d;margin-top:10px;max-width:760px}
+    .practice-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}.practice-card{border:1px solid #dbeafe;border-radius:18px;padding:14px;background:#f8fbff}.practice-card h4{margin:0;color:#124e7f}.practice-card p{margin:4px 0 0;color:#52677d;font-size:.92rem;line-height:1.35}
+    @media(max-width:900px){.question-card,.control-grid,.run-grid,.practice-grid{grid-template-columns:1fr}.machine-wrap canvas{height:480px}.metric-grid{grid-template-columns:1fr}.lab-hero h1{font-size:2.1rem}}
+  </style>
+</head>
+<body>
+<div class="lab-shell">
+  <header class="lab-hero">
+    <span class="kicker">Adaptive Judgment Lab · Chapter 14</span>
+    <h1>Adaptive Life Map</h1>
+    <p class="lede">A capstone lab for seeing adaptation as a living loop: sense, decide, act, learn, and renew.</p>
+    <nav class="nav-pills"><a href="../../index.html">Home</a><a href="../ignorance-inventory/index.html">← Ch. 13</a><a href="../../index.html#labs">All labs</a></nav>
+  </header>
+
+  <section class="panel question-card">
+    <div><span class="kicker">The question</span><h2>Is your system able to keep learning?</h2><p>Chapter 14 is the synthesis. The adaptive life is not a perfect plan. It is a loop that keeps contact with reality, chooses under uncertainty, acts before certainty, learns from feedback, and renews capacity.</p></div>
+    <div class="rule-card"><b>Lab rule:</b><br>The adaptive life is not a fixed path. It is a system that can sense, revise, and renew under changing conditions.</div>
+  </section>
+
+  <section class="panel">
+    <span class="kicker">Step 1</span><h2>Set the system conditions</h2>
+    <p class="small">Use three controls. The lab will stress the five adaptive capacities and show which loop is strongest or weakest.</p>
+    <div class="control-grid">
+      <div class="control-card"><label for="volatility">Environmental change <span id="volatilityLevel" class="level">Moderate</span></label><input id="volatility" type="range" min="0" max="100" value="58"><div class="value-row"><span>stable</span><span>volatile</span></div></div>
+      <div class="control-card"><label for="discipline">Decision discipline <span id="disciplineLevel" class="level">Developing</span></label><input id="discipline" type="range" min="0" max="100" value="54"><div class="value-row"><span>loose</span><span>structured</span></div></div>
+      <div class="control-card"><label for="renewal">Renewal capacity <span id="renewalLevel" class="level">Limited</span></label><input id="renewal" type="range" min="0" max="100" value="46"><div class="value-row"><span>drained</span><span>resilient</span></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="kicker">Step 2</span><h2>Run the adaptive loop</h2>
+    <p class="small">The loop shows five capacities. Labels sit outside the nodes; each node uses a bright inner disk so the strength number is readable.</p>
+    <div class="run-grid">
+      <div>
+        <div class="machine-wrap"><canvas id="lifeCanvas" width="820" height="560"></canvas></div>
+        <div class="legend"><span><i class="dot blue"></i>sense</span><span><i class="dot purple-dot"></i>decide</span><span><i class="dot orange-dot"></i>act</span><span><i class="dot green"></i>learn</span><span><i class="dot gold-dot"></i>renew</span><span><i class="dot red"></i>stress</span></div>
+        <p class="caption">Interpretation rule: an adaptive system is only as strong as the loop it fails to close.</p>
+      </div>
+      <aside class="side-panel">
+        <span class="kicker">Feedback</span><h3>What is the weakest loop?</h3>
+        <div id="stateName" class="feedback-state">System ready</div>
+        <p id="stateText">Run the loop to see which capacity carries the most strain.</p>
+        <div class="metric-grid"><div class="metric"><b id="capacityMetric">—</b><span>Capacity</span></div><div class="metric"><b id="fragilityMetric">—</b><span>Fragility</span></div><div class="metric"><b id="weakMetric">—</b><span>Weak loop</span></div></div>
+        <ul id="whyList" class="why-list"><li>Adaptive systems fail when feedback cannot return to action.</li></ul>
+        <div class="move-card"><b>Next practice</b><p id="moveText">Run a cycle, then choose one loop to strengthen.</p></div>
+        <div class="button-row"><button id="runButton" class="primary">Run loop</button><button id="stepButton" class="purple">Step once</button><button id="stressButton" class="orange">Stress test</button><button id="balanceButton" class="greenbtn">Balance system</button><button id="resetButton" class="gray wide">Reset</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="panel">
+    <span class="kicker">Capstone model</span><h2>The five adaptive capacities</h2>
+    <div class="practice-grid">
+      <div class="practice-card"><h4>Sense</h4><p>Stay in contact with reality.</p></div>
+      <div class="practice-card"><h4>Decide</h4><p>Use discipline before certainty.</p></div>
+      <div class="practice-card"><h4>Act</h4><p>Move while preserving feedback.</p></div>
+      <div class="practice-card"><h4>Learn</h4><p>Let outcomes update the system.</p></div>
+      <div class="practice-card"><h4>Renew</h4><p>Restore capacity for the next cycle.</p></div>
+    </div>
+  </section>
+</div>
+<script src="adaptive-life-map.js?v=3"></script>
+</body>
+</html>
